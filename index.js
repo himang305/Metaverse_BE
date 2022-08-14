@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3000;
 const filmrare_routes = require("./routes/filmrare_routes");
 
 app.use(express.json());
@@ -24,6 +23,6 @@ app.use((err, req, res, next) => {
   return;
 });
 
-app.listen(port, () => {
-  console.log(`Filmrare app listening at http://localhost:${port}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Filmrare app listening`);
 });
