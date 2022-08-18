@@ -2,13 +2,14 @@ const db = require("./db");
 const helper = require("../helper");
 const config = require("../config");
 
-      //  /filmrare 
-      //  /filmrare?page=2 
-
-async function getMultiple(page = 1) {
+async function getMultiple(page = 1,id = 0) {
   const offset = helper.getOffset(page, config.listPerPage);
+  var id_filter = '';
+  if(id != 0){
+    id_filter = ` where id = ${id} `;
+  }
   const rows = await db.query(
-    `SELECT * FROM nft_details LIMIT ${offset},${config.listPerPage}`
+    `SELECT * FROM nft_details ${id_filter} LIMIT ${offset},${config.listPerPage}`
   );
   const data = helper.emptyOrRows(rows);
   const meta = { page };

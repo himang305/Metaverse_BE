@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const filmrare_routes = require("./routes/filmrare_routes");
 
 app.use(express.json());
@@ -13,6 +14,10 @@ app.get("/", (req, res) => {
   res.json({ message: "API Connection OK" });
 });
 
+app.use(cors({
+  origin: '*'
+}));
+
 app.use("/filmrare", filmrare_routes);
 
 /* Error handler middleware */
@@ -23,6 +28,6 @@ app.use((err, req, res, next) => {
   return;
 });
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log(`Filmrare app listening`);
 });

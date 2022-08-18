@@ -5,7 +5,7 @@ const config = {
     password: "filmrare_password",
     database: "filmrare"
   },
-  listPerPage: 10,
+  listPerPage: 12,
 };
 
 module.exports = config;
