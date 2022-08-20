@@ -5,7 +5,17 @@ const nft_details = require("../services/nft_details");
 /* GET NFT. */
 router.get("/", async function (req, res, next) {
   try {
-    res.json(await nft_details.getMultiple(req.query.page, req.query.id));
+    res.json(await nft_details.getMultiple(req.query.page, req.query.id ));
+  } catch (err) {
+    console.error(`Error while getting nfts `, err.message);
+    next(err);
+  }
+});
+
+/* GET USER. */
+router.post("/getUser", async function (req, res, next) {
+  try {
+    res.json(await nft_details.getUsers(req.body));
   } catch (err) {
     console.error(`Error while getting nfts `, err.message);
     next(err);
@@ -23,12 +33,35 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+/* Create USER */
+router.post("/createUser", async function (req, res, next) {
+  try {
+    console.log(req.body);
+    res.json(await nft_details.createUser(req.body));
+  } catch (err) {
+    console.error(`Error while creating nfts`, err.message);
+    next(err);
+  }
+});
+
 /* PUT NFT */
 router.put("/:id", async function (req, res, next) {
   try {
     console.log(req.params.id);
     console.log(req.body);
     res.json(await nft_details.update(req.params.id, req.body));
+  } catch (err) {
+    console.error(`Error while updating nfts`, err.message);
+    next(err);
+  }
+});
+
+/* PUT USER */
+router.put("/user/:id", async function (req, res, next) {
+  try {
+    console.log(req.params.id);
+    console.log(req.body);
+    res.json(await nft_details.updateUser(req.params.id, req.body));
   } catch (err) {
     console.error(`Error while updating nfts`, err.message);
     next(err);
