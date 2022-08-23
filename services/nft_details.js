@@ -2,15 +2,21 @@ const db = require("./db");
 const helper = require("../helper");
 const config = require("../config");
 
-async function getMultiple(page = 1,id = 0) {
+async function getMultiple(page = 1,id = 0,user = 0, rentee = 0) {
   const offset = helper.getOffset(page, config.listPerPage);
-  var id_filter = '';
-  if(id != 0){
-    id_filter = ` where id = ${id} `;
+  var where_condition = '';
+  if(id != 0 || user != 0 || rentee != 0){
+    where = [];
+    if(id != 0)    where.push( ` id = ${id} ` );
+    if(user != 0)    where.push( ` owner_user_id = ${user} ` );
+    if(rentee != 0)    where.push( ` rentee_user_id = ${rentee} ` );
+    where_condition = " where " + where.join(' AND ');
   }
+  
   const rows = await db.query(
-    `SELECT * FROM nft_details ${id_filter} LIMIT ${offset},${config.listPerPage}`
+    `SELECT * FROM nft_details ${where_condition} LIMIT ${offset},${config.listPerPage}`
   );
+  
   const data = helper.emptyOrRows(rows);
   const meta = { page };
 

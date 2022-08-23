@@ -5,7 +5,7 @@ const nft_details = require("../services/nft_details");
 /* GET NFT. */
 router.get("/", async function (req, res, next) {
   try {
-    res.json(await nft_details.getMultiple(req.query.page, req.query.id ));
+    res.json(await nft_details.getMultiple(req.query.page, req.query.id, req.query.user, req.query.rentee ));
   } catch (err) {
     console.error(`Error while getting nfts `, err.message);
     next(err);

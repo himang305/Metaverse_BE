@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const filmrare_routes = require("./routes/filmrare_routes");
+const stripe_routes = require("./routes/stripe_routes");
 
 app.use(express.json());
 app.use(
@@ -19,6 +20,8 @@ app.use(cors({
 }));
 
 app.use("/filmrare", filmrare_routes);
+app.use("/stripe", stripe_routes);
+
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
