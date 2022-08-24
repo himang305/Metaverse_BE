@@ -5,7 +5,7 @@ const nft_details = require("../services/nft_details");
 /* GET NFT. */
 router.get("/", async function (req, res, next) {
   try {
-    res.json(await nft_details.getMultiple(req.query.page, req.query.id, req.query.user, req.query.rentee ));
+    res.json(await nft_details.getMultiple(req.query.page, req.query.id, req.query.user, req.query.rentee));
   } catch (err) {
     console.error(`Error while getting nfts `, err.message);
     next(err);
@@ -81,7 +81,7 @@ router.delete("/:id", async function (req, res, next) {
 /* USED for Toekn authorization in header on each API call */
 router.get("/private", async function (req, res, next) {
   try {
-    res.json(await nft_details.isAuth(req,res,next ));
+    res.json(await nft_details.isAuth(req, res, next));
   } catch (err) {
     console.error(`Error while auth `, err.message);
     next(err);

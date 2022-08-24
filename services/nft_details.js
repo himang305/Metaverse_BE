@@ -4,21 +4,21 @@ const config = require("../config");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-async function getMultiple(page = 1,id = 0,user = 0, rentee = 0) {
+async function getMultiple(page = 1, id = 0, user = 0, rentee = 0) {
   const offset = helper.getOffset(page, config.listPerPage);
   var where_condition = '';
-  if(id != 0 || user != 0 || rentee != 0){
+  if (id != 0 || user != 0 || rentee != 0) {
     where = [];
-    if(id != 0)    where.push( ` id = ${id} ` );
-    if(user != 0)    where.push( ` owner_user_id = ${user} ` );
-    if(rentee != 0)    where.push( ` rentee_user_id = ${rentee} ` );
+    if (id != 0) where.push(` id = ${id} `);
+    if (user != 0) where.push(` owner_user_id = ${user} `);
+    if (rentee != 0) where.push(` rentee_user_id = ${rentee} `);
     where_condition = " where " + where.join(' AND ');
   }
-  
+
   const rows = await db.query(
     `SELECT * FROM nft_details ${where_condition} LIMIT ${offset},${config.listPerPage}`
   );
-  
+
   const data = helper.emptyOrRows(rows);
   const meta = { page };
 
@@ -31,24 +31,24 @@ async function getMultiple(page = 1,id = 0,user = 0, rentee = 0) {
 async function getUsers(nft_details) {
 
   console.log(nft_details);
-  if(nft_details.username != "" && nft_details.password != ""){
+  if (nft_details.username != "" && nft_details.password != "") {
     user_filter = ` where user_name = "${nft_details.username}"`;
     //user_filter = ` where user_name = "${nft_details.username}" and user_password = "${newPassword}"`;
-  const rows = await db.query(
-    `SELECT * FROM user_master ${user_filter} `
-  );
-  const data = helper.emptyOrRows(rows);
+    const rows = await db.query(
+      `SELECT * FROM user_master ${user_filter} `
+    );
+    const data = helper.emptyOrRows(rows);
     const validPassword = await bcrypt.compare(nft_details.password, data[0].user_password);
     if (validPassword) {
       const token = jwt.sign({ username: nft_details.username }, 'secret', { expiresIn: '1h' });
-      return { message: "Valid password",status:200, token:token }
+      return { message: "Valid password", status: 200, token: token }
     } else {
-      return { message: "Invalid password",status:400 }
+      return { message: "Invalid password", status: 400 }
     }
-  /*return {
-    data
-  };*/
-}
+    /*return {
+      data
+    };*/
+  }
 }
 
 async function create(nft_details) {
@@ -142,11 +142,11 @@ async function remove(id) {
 
   return { message };
 }
-async function isAuth(req,res) {
+async function isAuth(req, res) {
   const authHeader = req.get("Authorization");
   if (!authHeader) {
-   //return { message: 'not authenticated',status:401 };
-      res.status(401).json({ message: 'not authenticated' });
+    //return { message: 'not authenticated',status:401 };
+    res.status(401).json({ message: 'not authenticated' });
   }
   const token = authHeader.split(' ')[1];
   let decodedToken;
@@ -158,7 +158,7 @@ async function isAuth(req,res) {
   if (!decodedToken) {
     res.status(401).json({ message: 'unauthorized' });
   } else {
-      return { message: 'here is your resource',status:200 }
+    return { message: 'here is your resource', status: 200 }
   };
 };
 // to call this in filmrare_routes or stripe page,var auth = await nft_details.isAuth(req,res);
@@ -169,5 +169,5 @@ module.exports = {
   createUser,
   updateUser,
   update,
-  remove,isAuth
+  remove, isAuth
 };
