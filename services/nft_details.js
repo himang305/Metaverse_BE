@@ -72,22 +72,39 @@ async function create(nft_details) {
 }
 
 async function createUser(nft_details) {
-  console.log(nft_details.nft_id);
-  const salt = await bcrypt.genSalt(10)
-  const newPassword = await bcrypt.hash(nft_details.user_password, salt)
-  console.log(newPassword);
-  const result = await db.query(
-    `INSERT INTO user_master 
-    (user_name, user_password, first_name, last_name, email, phone, address	) 
+  console.log(nft_details.email);
+  if(nft_details.user_name != "" && nft_details.email != "") {
+    user_filter = ` where user_name = "${nft_details.user_name}" and email = "${nft_details.email}"`;
+    //user_filter = ` where user_name = "${nft_details.username}" and user_password = "${newPassword}"`;
+    const rows = await db.query(
+        `SELECT *
+         FROM user_master ${user_filter} `
+    );
+    console.log(nft_details.user_name);
+    const data = helper.emptyOrRows(rows);
+    console.log(data);
+    console.log(Object.keys(data).length);
+    if(Object.keys(data).length === 0 ){
+      const salt = await bcrypt.genSalt(10)
+      const newPassword = await bcrypt.hash(nft_details.user_password, salt)
+      console.log(newPassword);
+      const result = await db.query(
+          `INSERT INTO user_master 
+    (user_name, user_password, first_name, last_name, email, phone, address    ) 
     VALUES 
     ("${nft_details.user_name}","${newPassword}","${nft_details.first_name}", 
       "${nft_details.last_name}","${nft_details.email}",${nft_details.phone},"${nft_details.address}")`
-  );
-  let message = "Error in creating user";
-  if (result.affectedRows) {
-    message = "User created successfully";
+      );
+      let message = "Error in creating user";
+      if (result.affectedRows) {
+        message = "successfully registered!!";
+      }
+      return { message };
+    }else{
+      message = "already exists!";
+      return { message,flag:"exist"};
+    }
   }
-  return { message };
 }
 
 async function update(id, nft_details) {
