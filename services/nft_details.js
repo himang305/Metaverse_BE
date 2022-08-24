@@ -32,15 +32,12 @@ async function getUsers(nft_details) {
 
   console.log(nft_details);
   if(nft_details.username != "" && nft_details.password != ""){
-
     user_filter = ` where user_name = "${nft_details.username}"`;
     //user_filter = ` where user_name = "${nft_details.username}" and user_password = "${newPassword}"`;
-  
   const rows = await db.query(
     `SELECT * FROM user_master ${user_filter} `
   );
   const data = helper.emptyOrRows(rows);
-  console.log(data[0].user_password)
     const validPassword = await bcrypt.compare(nft_details.password, data[0].user_password);
     if (validPassword) {
       const token = jwt.sign({ username: nft_details.username }, 'secret', { expiresIn: '1h' });
@@ -48,7 +45,6 @@ async function getUsers(nft_details) {
     } else {
       return { message: "Invalid password",status:400 }
     }
-
   /*return {
     data
   };*/
