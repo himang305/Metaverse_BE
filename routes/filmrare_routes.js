@@ -78,4 +78,13 @@ router.delete("/:id", async function (req, res, next) {
   }
 });
 
+/* USED for Toekn authorization in header on each API call */
+router.get("/private", async function (req, res, next) {
+  try {
+    res.json(await nft_details.isAuth(req,res,next ));
+  } catch (err) {
+    console.error(`Error while auth `, err.message);
+    next(err);
+  }
+});
 module.exports = router;
