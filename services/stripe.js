@@ -59,7 +59,7 @@ async function subStripe(req) {
       if (status === 'succeeded') {
         // The payment didn’t need any additional actions and completed!
         // Handle post-payment fulfillment
-        return { 'client_secret': client_secret, 'status': status, 'invoice': invoice,'success':true };
+        return { 'client_secret': client_secret, 'status': status, 'invoice': invoice,'success':true,'user_email':email,'customer_id':customer_id };
         //res.json(subscription);
       } else { // Invalid status
         return { error: 'Invalid PaymentIntent status' };}
