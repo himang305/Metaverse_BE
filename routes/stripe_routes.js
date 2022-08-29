@@ -23,5 +23,14 @@ router.post("/sub", async function (req, res, next) {
   }
 });
 
+router.post("/transfer", async function (req, res, next) {
+  try {
+    res.json(await stripe.transferOwnership(req.body));
+  } catch (err) {
+    console.error(`Error in stripe`, err.message);
+    next(err);
+  }
+});
+
 
 module.exports = router;
