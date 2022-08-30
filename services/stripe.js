@@ -758,7 +758,8 @@ const nftAddress = "0x8b730C192543EFc566d735357f625247DBB1F620";
 
 async function subStripe(req) {
   try {
-    const { email, payment_method, name } = req;
+    const { email, payment_method, name,plan } = req;
+    //console.log(plan);
     //managing user, return stripe ID , if not return null / create user if not exist.
     const hasStripID = await checkUserHasStripeid(email, name);
     var customer_id = hasStripID;
@@ -783,7 +784,7 @@ async function subStripe(req) {
     console.log(customer_id);
     console.log('checkUserHasStripeSubId');
     // price_1LVsEtAQgwEW0kk8gJtL1McZ   price_1LVsEtAQgwEW0kk871jAlGMe
-    var planId = "price_1LVsEtAQgwEW0kk8gJtL1McZ";
+    var planId = plan;
     const hasStripSubscriptionId = await checkUserHasStripeSubId(email, customer_id, planId);
     //console.log(hasStripSubscriptionId);
     if (Object.keys(hasStripSubscriptionId).length !== 0) {
