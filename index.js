@@ -19,8 +19,8 @@ app.use(cors({
   origin: '*'
 }));
 
-app.use("/filmrare", filmrare_routes);
-app.use("/stripe", stripe_routes);
+app.use("/api/filmrare", filmrare_routes);
+app.use("/api/stripe", stripe_routes);
 
 
 /* Error handler middleware */
