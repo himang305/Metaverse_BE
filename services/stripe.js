@@ -810,9 +810,11 @@ async function subStripe(req) {
     const invoice = subscription['latest_invoice']['invoice_pdf']
 
     if (status === 'succeeded') {
+      const userData = await getUserDetails(email, customer_id);
+      const user_id = userData[0].id;
       // The payment didn’t need any additional actions and completed!
       // Handle post-payment fulfillment
-      return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId };
+      return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id };
       //res.json(subscription);
     } else { // Invalid status
       return { error: 'Invalid PaymentIntent status' };
@@ -1122,10 +1124,16 @@ async function nftTransferFailure(transaction_id) {
   );
 
 }
+async function getsubscriptionDetails(user_id, stripe_id) {
+  const subRows = await db.query(`SELECT * FROM subscriptions where stripe_id = "${stripe_id}" and user_id = "${user_id}" `);
+  const subData = helper.emptyOrRows(subRows);
+  return { subData };
+}
 
 module.exports = {
   payStripe,
   subStripe,
-  transferOwnership
+  transferOwnership,
+  getsubscriptionDetails
 };
 

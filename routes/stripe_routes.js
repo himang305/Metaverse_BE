@@ -32,5 +32,16 @@ router.post("/transfer", async function (req, res, next) {
   }
 });
 
+router.get("/subdetails/:user_id/:stripe_id/", async function (req, res, next) {
+  try {
+    console.log(req.params.user_id);
+    console.log(req.params.stripe_id);
+    console.log(req.body);
+    res.json(await stripe.getsubscriptionDetails(req.params.user_id, req.params.stripe_id, next));
+  } catch (err) {
+    console.error(`Error  in stripe `, err.message);
+    next(err);
+  }
+});
 
 module.exports = router;
