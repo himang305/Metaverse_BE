@@ -805,16 +805,17 @@ async function subStripe(req) {
 
     await stripeSubscription(email, customer_id, subscription);
     const subId = subscription['id'];
-    const status = subscription['latest_invoice']['payment_intent']['status']
-    const client_secret = subscription['latest_invoice']['payment_intent']['client_secret']
-    const invoice = subscription['latest_invoice']['invoice_pdf']
+    const status = subscription['latest_invoice']['payment_intent']['status'];
+    const client_secret = subscription['latest_invoice']['payment_intent']['client_secret'];
+    const invoice = subscription['latest_invoice']['invoice_pdf'];
+    const duration_ends = subscription['current_period_end'];
 
     if (status === 'succeeded') {
       const userData = await getUserDetails(email, customer_id);
       const user_id = userData[0].id;
       // The payment didn’t need any additional actions and completed!
       // Handle post-payment fulfillment
-      return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id };
+      return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
       //res.json(subscription);
     } else { // Invalid status
       return { error: 'Invalid PaymentIntent status' };
