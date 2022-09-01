@@ -178,6 +178,36 @@ async function isAuth(req, res) {
     return { message: 'here is your resource', status: 200 }
   };
 };
+
+async function updateWallet(id, nft_details) {
+  const result = await db.query(
+      `UPDATE user_master 
+    SET
+    address="${nft_details.address}"
+    WHERE id=${id}`
+  );
+  let message = "Error in updating nft";
+  if (result.affectedRows) {
+    message = "NFT updated successfully";
+  }
+  return { message };
+}
+
+async function walletsubupdate(id, nft_details) {
+  const result = await db.query(
+      `UPDATE subscriptions 
+    SET
+      wallet_address="${nft_details.address}",
+      transfer_flag = 1
+    WHERE user_id=${id} and stripe_id="${nft_details.sub_id}"`
+  );
+  let message = "Error in updating nft";
+  if (result.affectedRows) {
+    message = "NFT updated successfully";
+  }
+  return { message };
+}
+
 // to call this in filmrare_routes or stripe page,var auth = await nft_details.isAuth(req,res);
 module.exports = {
   getMultiple,
@@ -186,5 +216,5 @@ module.exports = {
   createUser,
   updateUser,
   update,
-  remove, isAuth
+  remove, isAuth, updateWallet, walletsubupdate
 };
