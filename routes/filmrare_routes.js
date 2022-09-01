@@ -87,4 +87,27 @@ router.get("/private", async function (req, res, next) {
     next(err);
   }
 });
+/* Updating User Wallet */
+router.put("/walletuserupdate/:id", async function (req, res, next) {
+  try {
+    console.log(req.params.id);
+    console.log(req.body);
+    res.json(await nft_details.updateWallet(req.params.id, req.body));
+  } catch (err) {
+    console.error(`Error while updating nfts`, err.message);
+    next(err);
+  }
+});
+
+/* Updating Subscription table Wallet */
+router.put("/walletsubupdate/:sub_id", async function (req, res, next) {
+  try {
+    console.log(req.params.id);
+    console.log(req.body);
+    res.json(await nft_details.walletsubupdate(req.params.id, req.body));
+  } catch (err) {
+    console.error(`Error while updating nfts`, err.message);
+    next(err);
+  }
+});
 module.exports = router;
