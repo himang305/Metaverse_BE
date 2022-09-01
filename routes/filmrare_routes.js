@@ -100,7 +100,7 @@ router.put("/walletuserupdate/:id", async function (req, res, next) {
 });
 
 /* Updating Subscription table Wallet */
-router.put("/walletsubupdate/:sub_id", async function (req, res, next) {
+router.put("/walletsubupdate/:id", async function (req, res, next) {
   try {
     console.log(req.params.id);
     console.log(req.body);
