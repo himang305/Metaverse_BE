@@ -1009,6 +1009,9 @@ async function getUserSubscriptionDetails(user_id, planId) {
   return subscriptionData;
 }
 
+
+
+
 async function transferOwnership(req) {
   try {
 
@@ -1017,9 +1020,10 @@ async function transferOwnership(req) {
     const user_id = req.user_id;
     const expires = req.expiry;
     let message = '';
-    const transaction_id = await getTransactionStatus(req.user_id, req.stripe_id);
-
+    const transaction_id = await getTransactionStatus(user_id, req.stripe_id);
+    console.log(transaction_id);
     if (transaction_id > 0) {
+      console.log("enter transaction");
 
       const rpcURL = 'https://rpc-mumbai.maticvigil.com/';                    // RPC url
       const account1 = '0xf922e3223567AeB66e6986cb09068B1B879B6ccc';          // Owner Address
@@ -1030,7 +1034,6 @@ async function transferOwnership(req) {
       web3.eth.accounts.wallet.add(privateKey);
 
       const tx = myContract.methods.rentNFT(tokenId, user, expires);
-
 
       const gas = await tx.estimateGas({ from: account1 });
       const gasPrice = await web3.eth.getGasPrice();
@@ -1080,12 +1083,14 @@ async function transferOwnership(req) {
 async function getTransactionStatus(user_id = 0, stripe_id = 0) {
 
   if (user_id != 0 && stripe_id != 0) {
-    user_filter = ` where user_id = ${user_id} and stripe_id = ${stripe_id} and stripe_status = 1 `;
+    user_filter = ` where user_id = "${user_id}" and stripe_id = "${stripe_id}" and stripe_status = 1 `;
+    console.log(user_filter);
     const rows = await db.query(
       `SELECT * FROM subscriptions ${user_filter} `
     );
     const data = helper.emptyOrRows(rows);
-
+    console.log(data);
+    console.log(data.length);
     if (data.length != 0) {
       return data[0].id;
     } else {
@@ -1095,6 +1100,7 @@ async function getTransactionStatus(user_id = 0, stripe_id = 0) {
 }
 
 async function nftTransferDB(transaction_id, nft_id, user_id, user, expiry) {
+  console.log("nftTransferDB");
   let result = await db.query(
     `UPDATE nft_details 
     SET rentee_user_id = "${user_id}",rentee_address="${user}", rent_expiry_timestamp=${expiry}
