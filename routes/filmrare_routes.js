@@ -117,7 +117,7 @@ router.get("/private", async function (req, res, next) {
   }
 });
 /* Updating User Wallet */
-router.put("/walletuserupdate/:id", async function (req, res, next) {
+router.put("/walletuserupdate/:id/", async function (req, res, next) {
   try {
     console.log(req.params.id);
     console.log(req.body);
