@@ -12,32 +12,11 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-/* GET USER. */
-router.post("/getUser", async function (req, res, next) {
-  try {
-    res.json(await nft_details.getUsers(req.body));
-  } catch (err) {
-    console.error(`Error while getting nfts `, err.message);
-    next(err);
-  }
-});
-
 /* POST NFT */
 router.post("/", async function (req, res, next) {
   try {
     console.log(req.body);
     res.json(await nft_details.create(req.body));
-  } catch (err) {
-    console.error(`Error while creating nfts`, err.message);
-    next(err);
-  }
-});
-
-/* Create USER */
-router.post("/createUser", async function (req, res, next) {
-  try {
-    console.log(req.body);
-    res.json(await nft_details.createUser(req.body));
   } catch (err) {
     console.error(`Error while creating nfts`, err.message);
     next(err);
@@ -56,6 +35,40 @@ router.put("/:id", async function (req, res, next) {
   }
 });
 
+/* DELETE NFT */
+router.delete("/:id", async function (req, res, next) {
+  try {
+    res.json(await nft_details.remove(req.params.id));
+  } catch (err) {
+    console.error(`Error while deleting nfts`, err.message);
+    next(err);
+  }
+});
+
+
+
+
+/* GET USER. */
+router.post("/getUser", async function (req, res, next) {
+  try {
+    res.json(await nft_details.getUsers(req.body));
+  } catch (err) {
+    console.error(`Error while getting nfts `, err.message);
+    next(err);
+  }
+});
+
+/* Create USER */
+router.post("/createUser", async function (req, res, next) {
+  try {
+    console.log(req.body);
+    res.json(await nft_details.createUser(req.body));
+  } catch (err) {
+    console.error(`Error while creating nfts`, err.message);
+    next(err);
+  }
+});
+
 /* PUT USER */
 router.put("/user/:id", async function (req, res, next) {
   try {
@@ -68,15 +81,31 @@ router.put("/user/:id", async function (req, res, next) {
   }
 });
 
-/* DELETE NFT */
-router.delete("/:id", async function (req, res, next) {
+
+
+/* GET History. */
+router.get("/history", async function (req, res, next) {
   try {
-    res.json(await nft_details.remove(req.params.id));
+    res.json(await nft_details.getHistory(req.query.nft_id));
   } catch (err) {
-    console.error(`Error while deleting nfts`, err.message);
+    console.error(`Error while getting history `, err.message);
     next(err);
   }
 });
+
+/* POST History */
+router.post("/history", async function (req, res, next) {
+  try {
+    console.log(req.body);
+    res.json(await nft_details.createHistory(req.body));
+  } catch (err) {
+    console.error(`Error while creating nfts`, err.message);
+    next(err);
+  }
+});
+
+
+
 
 /* USED for Toekn authorization in header on each API call */
 router.get("/private", async function (req, res, next) {
