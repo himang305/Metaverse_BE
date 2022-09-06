@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const db = require("./db");
 const helper = require("../helper");
 const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
+//const stripe = require('stripe')('sk_live_...5tWX');
+
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx').Transaction;
 
@@ -759,7 +761,9 @@ const nftAddress = "0x8b730C192543EFc566d735357f625247DBB1F620";
 async function subStripe(req) {
   try {
     const { email, payment_method, name,plan } = req;
-    //console.log(plan);
+    if(plan == '' || plan == null){
+      return { 'status': "no_plan", error: "Selected plan is not available in stripe!" };
+    }
     //managing user, return stripe ID , if not return null / create user if not exist.
     const hasStripID = await checkUserHasStripeid(email, name);
     var customer_id = hasStripID;
