@@ -28,6 +28,46 @@ async function getMultiple(page = 1, id = 0, user = 0, rentee = 0) {
     meta,
   };
 }
+async function getMultiplewithaddress(page = 1, id = 0, user = 0, rentee = 0,address = 0) {
+  const offset = helper.getOffset(page, config.listPerPage);
+  var where_condition = '';
+  if (address != 0 ) {
+    where = [];
+    if (address != 0) where.push(` rentee_address = "${address}" `);
+
+    where_condition = " where " + where.join(' AND ');
+  }
+
+  const rows = await db.query(
+      `SELECT * FROM nft_details ${where_condition} LIMIT ${offset},${config.listPerPage}`
+  );
+
+  const data = helper.emptyOrRows(rows);
+  const meta = { page };
+
+  return {
+    data,
+    meta,
+  };
+}
+async function getUserDetailsbyaddress(address) { console.log('here am'+address);
+  var where_condition = '';
+  if (address != "" ) {
+      const rows = await db.query(
+          `SELECT * FROM user_master where address = "${address}" `
+      );
+      const data = helper.emptyOrRows(rows);
+
+
+      return {
+          data
+      };
+  }
+
+
+
+
+}
 
 async function create(nft_details) {
   console.log(nft_details.nft_id);
@@ -261,5 +301,5 @@ module.exports = {
   update,
   getHistory,
   createHistory,
-  remove, isAuth, updateWallet, walletsubupdate
+  remove, isAuth, updateWallet, walletsubupdate,getUserDetailsbyaddress,getMultiplewithaddress
 };

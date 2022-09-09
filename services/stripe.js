@@ -1061,6 +1061,7 @@ async function transferOwnership(req) {
         'chainId': 0x13881
       };
       //console.log("test 3");
+      console.log("test 3");
       const receipt = await web3.eth.sendTransaction(txData)
         .on('transactionHash', (hash) => {
           console.log(hash);
@@ -1076,16 +1077,20 @@ async function transferOwnership(req) {
         .on('error', console.error);
       //console.log("test 4");
       if (message === "Blockchain Success") { //console.log("test 5");
+        console.log("Blockchain Success trying to update DB");
         message = await nftTransferDB(transaction_id, tokenId, user_id, user, expires);
+        console.log("Blockchain Success ,DB updated");
       }
     } else {
       message = "Stripe Transaction not found";
     }
 
     if (message !== "success") {
+      console.log("NOT success, Failed")
       await nftTransferFailure(transaction_id);
+      console.log("NOT success, Failed DB updated")
     }
-
+    console.log("returning "+message);
     return { message };
   } catch (e) {
     return { error: e.message };
