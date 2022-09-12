@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const db = require("./db");
 const helper = require("../helper");
 //const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
-const stripe = require('stripe')('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');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx').Transaction;
