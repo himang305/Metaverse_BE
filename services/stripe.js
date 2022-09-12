@@ -2,8 +2,8 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const db = require("./db");
 const helper = require("../helper");
-const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
-//const stripe = require('stripe')('sk_live_...5tWX');
+//const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
+const stripe = require('stripe')('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');
 
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx').Transaction;
@@ -1046,7 +1046,7 @@ async function transferOwnership(req) {
       web3.eth.accounts.wallet.add(privateKey);
 
       const tx = myContract.methods.rentNFT(tokenId, user, expires);
-      //console.log("test 2");
+      console.log("test 2");
       const gas = await tx.estimateGas({ from: account1 });
       const gasPrice = await web3.eth.getGasPrice();
       const data = tx.encodeABI();
@@ -1078,6 +1078,7 @@ async function transferOwnership(req) {
       //console.log("test 4");
       if (message === "Blockchain Success") { //console.log("test 5");
         console.log("Blockchain Success trying to update DB");
+        console.log('updating nft_details table'+tokenId);
         message = await nftTransferDB(transaction_id, tokenId, user_id, user, expires);
         console.log("Blockchain Success ,DB updated");
       }
