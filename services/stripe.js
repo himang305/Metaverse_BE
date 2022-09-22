@@ -8,7 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx').Transaction;
 
-const nftABI = [
+const nftABI = [  
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -808,22 +808,36 @@ async function subStripe(req) {
         expand: ['latest_invoice.payment_intent']
       });
       console.log(subscription);
-      await stripeSubscription(email, customer_id, subscription);
-      const subId = subscription['id'];
+
+
       const status = subscription['latest_invoice']['payment_intent']['status'];
       const client_secret = subscription['latest_invoice']['payment_intent']['client_secret'];
-      const invoice = subscription['latest_invoice']['invoice_pdf'];
-      const duration_ends = subscription['current_period_end'];
-
+      console.log(status);
       if (status === 'succeeded') {
+        await stripeSubscription(email, customer_id, subscription);
+        const subId = subscription['id'];
+        const invoice = subscription['latest_invoice']['invoice_pdf'];
+        const duration_ends = subscription['current_period_end'];
         const userData = await getUserDetails(email, customer_id);
         const user_id = userData[0].id;
         // The payment didn’t need any additional actions and completed!
         // Handle post-payment fulfillment
         return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
         //res.json(subscription);
-      } else { // Invalid status
-        return { error: 'Invalid PaymentIntent status' };
+      }
+      else if(status === 'requires_action'){
+        // The payment additional actions
+        console.log('inside required action');
+        await stripeSubscription(email, customer_id, subscription);
+        const subId = subscription['id'];
+        const invoice = subscription['latest_invoice']['invoice_pdf'];
+        const duration_ends = subscription['current_period_end'];
+        const userData = await getUserDetails(email, customer_id);
+        const user_id = userData[0].id;
+        return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
+      }
+      else { // Invalid status
+        return { 'client_secret': client_secret, 'status': status,error: 'Invalid PaymentIntent status' };
       }
     }
     catch (e) {
