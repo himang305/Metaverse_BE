@@ -30,7 +30,7 @@ async function getMultiple(page = 1, id = 0, user = 0, rentee = 0) {
 }
 async function getMultiplewithaddress(page = 1, id = 0, user = 0, rentee = 0,address = 0) {
   const offset = helper.getOffset(page, config.listPerPage);
-  var where_condition = ' where subscription_flag != 1 ';
+  var where_condition = ' where subscription_flag = 1 ';
   if (address != 0 ) {
     where = [];
     if (address != 0) where.push(` rentee_address = "${address}" `);
