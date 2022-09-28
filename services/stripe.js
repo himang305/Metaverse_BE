@@ -2,11 +2,13 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const db = require("./db");
 const helper = require("../helper");
-const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
+//const stripe = require('stripe')('sk_test_51HCSmCAQgwEW0kk8kfhc4KIECR2atsiXQtKo2s8A3KLnNkv1ntjh5U0NdhLaT5etxnug17o4xj7mhl9fXKhhyeQT00OnHrNgzz');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
+
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx').Transaction;
 
-const nftABI = [
+const nftABI = [  
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -759,7 +761,9 @@ const nftAddress = "0x8b730C192543EFc566d735357f625247DBB1F620";
 async function subStripe(req) {
   try {
     const { email, payment_method, name,plan } = req;
-    //console.log(plan);
+    if(plan == '' || plan == null){
+      return { 'status': "no_plan", error: "Selected plan is not available in stripe!" };
+    }
     //managing user, return stripe ID , if not return null / create user if not exist.
     const hasStripID = await checkUserHasStripeid(email, name);
     var customer_id = hasStripID;
@@ -797,29 +801,51 @@ async function subStripe(req) {
     console.log('subscrption creating process started');
     console.log(customer_id);
     //creating subscription
-    const subscription = await stripe.subscriptions.create({
-      customer: customer_id,
-      items: [{ plan: planId }],
-      expand: ['latest_invoice.payment_intent']
-    });
+    try {
+      const subscription = await stripe.subscriptions.create({
+        customer: customer_id,
+        items: [{ plan: planId }],
+        expand: ['latest_invoice.payment_intent']
+      });
+      console.log(subscription);
 
-    await stripeSubscription(email, customer_id, subscription);
-    const subId = subscription['id'];
-    const status = subscription['latest_invoice']['payment_intent']['status'];
-    const client_secret = subscription['latest_invoice']['payment_intent']['client_secret'];
-    const invoice = subscription['latest_invoice']['invoice_pdf'];
-    const duration_ends = subscription['current_period_end'];
 
-    if (status === 'succeeded') {
-      const userData = await getUserDetails(email, customer_id);
-      const user_id = userData[0].id;
-      // The payment didn’t need any additional actions and completed!
-      // Handle post-payment fulfillment
-      return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
-      //res.json(subscription);
-    } else { // Invalid status
-      return { error: 'Invalid PaymentIntent status' };
+      const status = subscription['latest_invoice']['payment_intent']['status'];
+      const client_secret = subscription['latest_invoice']['payment_intent']['client_secret'];
+      console.log(status);
+      if (status === 'succeeded') {
+        await stripeSubscription(email, customer_id, subscription);
+        const subId = subscription['id'];
+        const invoice = subscription['latest_invoice']['invoice_pdf'];
+        const duration_ends = subscription['current_period_end'];
+        const userData = await getUserDetails(email, customer_id);
+        const user_id = userData[0].id;
+        // The payment didn’t need any additional actions and completed!
+        // Handle post-payment fulfillment
+        return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
+        //res.json(subscription);
+      }
+      else if(status === 'requires_action'){
+        // The payment additional actions
+        console.log('inside required action');
+        await stripeSubscription(email, customer_id, subscription);
+        const subId = subscription['id'];
+        const invoice = subscription['latest_invoice']['invoice_pdf'];
+        const duration_ends = subscription['current_period_end'];
+        const userData = await getUserDetails(email, customer_id);
+        const user_id = userData[0].id;
+        return { 'client_secret': client_secret, 'status': status, 'invoice': invoice, 'success': true, 'user_email': email, 'customer_id': customer_id,'sub_id':subId,'user_id':user_id,'duration_ends':duration_ends };
+      }
+      else { // Invalid status
+        return { 'client_secret': client_secret, 'status': status,error: 'Invalid PaymentIntent status' };
+      }
     }
+    catch (e) {
+      console.log(e.message);
+      return { 'status': "no_plan", error: e.message };
+
+    }
+
 
 
   }
@@ -1034,7 +1060,7 @@ async function transferOwnership(req) {
       web3.eth.accounts.wallet.add(privateKey);
 
       const tx = myContract.methods.rentNFT(tokenId, user, expires);
-
+      console.log("test 2");
       const gas = await tx.estimateGas({ from: account1 });
       const gasPrice = await web3.eth.getGasPrice();
       const data = tx.encodeABI();
@@ -1048,7 +1074,8 @@ async function transferOwnership(req) {
         nonce,
         'chainId': 0x13881
       };
-
+      //console.log("test 3");
+      console.log("test 3");
       const receipt = await web3.eth.sendTransaction(txData)
         .on('transactionHash', (hash) => {
           console.log(hash);
@@ -1062,18 +1089,23 @@ async function transferOwnership(req) {
           }
         })
         .on('error', console.error);
-
-      if (message === "Blockchain Success") {
+      //console.log("test 4");
+      if (message === "Blockchain Success") { //console.log("test 5");
+        console.log("Blockchain Success trying to update DB");
+        console.log('updating nft_details table'+tokenId);
         message = await nftTransferDB(transaction_id, tokenId, user_id, user, expires);
+        console.log("Blockchain Success ,DB updated");
       }
     } else {
       message = "Stripe Transaction not found";
     }
 
     if (message !== "success") {
+      console.log("NOT success, Failed")
       await nftTransferFailure(transaction_id);
+      console.log("NOT success, Failed DB updated")
     }
-
+    console.log("returning "+message);
     return { message };
   } catch (e) {
     return { error: e.message };
@@ -1101,9 +1133,12 @@ async function getTransactionStatus(user_id = 0, stripe_id = 0) {
 
 async function nftTransferDB(transaction_id, nft_id, user_id, user, expiry) {
   console.log("nftTransferDB");
+  var expiry_period_end = new Date(expiry * 1000);
+  var expiry_current_period_end = expiry_period_end.toISOString().slice(0, 19).replace('T', ' ');
+
   let result = await db.query(
     `UPDATE nft_details 
-    SET rentee_user_id = "${user_id}",rentee_address="${user}", rent_expiry_timestamp=${expiry}
+    SET rentee_user_id = "${user_id}",rentee_address="${user}", rent_expiry_timestamp="${expiry_current_period_end}",subscription_flag = 1
     WHERE nft_id=${nft_id}`
   );
 

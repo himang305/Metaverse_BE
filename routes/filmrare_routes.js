@@ -5,7 +5,13 @@ const nft_details = require("../services/nft_details");
 /* GET NFT. */
 router.get("/", async function (req, res, next) {
   try {
-    res.json(await nft_details.getMultiple(req.query.page, req.query.id, req.query.user, req.query.rentee));
+    if(req.query.address){
+      console.log(req.query.address)
+      res.json(await nft_details.getMultiplewithaddress(req.query.page, req.query.id, req.query.user, req.query.rentee,req.query.address));
+    }else{console.log('no address')
+      res.json(await nft_details.getMultiple(req.query.page, req.query.id, req.query.user, req.query.rentee));
+    }
+
   } catch (err) {
     console.error(`Error while getting nfts `, err.message);
     next(err);
@@ -117,7 +123,7 @@ router.get("/private", async function (req, res, next) {
   }
 });
 /* Updating User Wallet */
-router.put("/walletuserupdate/:id", async function (req, res, next) {
+router.put("/walletuserupdate/:id/", async function (req, res, next) {
   try {
     console.log(req.params.id);
     console.log(req.body);
@@ -136,6 +142,16 @@ router.put("/walletsubupdate/:id", async function (req, res, next) {
     res.json(await nft_details.walletsubupdate(req.params.id, req.body));
   } catch (err) {
     console.error(`Error while updating nfts`, err.message);
+    next(err);
+  }
+});
+
+/* GET User Details By Address. */
+router.get("/userbyaddress/", async function (req, res, next) {
+  try { console.log(req.query.address);
+    res.json(await nft_details.getUserDetailsbyaddress(req.query.address));
+  } catch (err) {
+    console.error(`Error while getting userDetails `, err.message);
     next(err);
   }
 });
