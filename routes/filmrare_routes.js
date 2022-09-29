@@ -155,4 +155,28 @@ router.get("/userbyaddress/", async function (req, res, next) {
     next(err);
   }
 });
+
+/*  get nft details by checkbox filter */
+/* GET USER. */
+router.get("/getnftbycheckbox", async function (req, res, next) {
+  try {
+
+    res.json(await nft_details.getnftbycheckbox(req.query.business_type));
+  } catch (err) {
+    console.error(`Error while getting nfts `, err.message);
+    next(err);
+  }
+});
+
+/*  get nft details by search filter */
+/* GET USER. */
+router.get("/getnftbysearchbox", async function (req, res, next) {
+  try {
+    res.json(await nft_details.getnftbysearchbox(req.query.search_value));
+  } catch (err) {
+    console.error(`Error while getting nfts `, err.message);
+    next(err);
+  }
+});
+
 module.exports = router;
