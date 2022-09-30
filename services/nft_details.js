@@ -7,13 +7,13 @@ const jwt = require('jsonwebtoken');
 
 async function getMultiple(page = 1, id = 0, user = 0, rentee = 0) {
   const offset = helper.getOffset(page, config.listPerPage);
-  var where_condition = '';
+  var where_condition = ' where subscription_flag != 1 ';
   if (id != 0 || user != 0 || rentee != 0) {
     where = [];
     if (id != 0) where.push(` id = ${id} `);
     if (user != 0) where.push(` owner_user_id = ${user} `);
     if (rentee != 0) where.push(` rentee_user_id = ${rentee} `);
-    where_condition = " where " + where.join(' AND ');
+    where_condition += "AND " + where.join(' AND ');
   }
 
   const rows = await db.query(
