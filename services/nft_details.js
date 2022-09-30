@@ -290,7 +290,40 @@ async function walletsubupdate(id, nft_details) {
   }
   return { message };
 }
+async function getnftbycheckbox(business_type = 0) {
 
+    const rows = await db.query(
+        `SELECT * FROM nft_details where subscription_flag != 1 AND business_type LIKE "%${business_type}%" `
+    );
+
+    let data = helper.emptyOrRows(rows);
+
+    console.log(data.length);
+    if(data.length == 0 ){
+        data = ""
+    }
+    return {
+        data
+    };
+}
+
+async function getnftbysearchbox(search_name) {
+
+  console.log(search_name.length);
+  const rows = await db.query(
+      `SELECT * FROM nft_details where subscription_flag != 1 AND (titile LIKE "%${search_name}%" OR title_description LIKE "%${search_name}%" OR detailed_description LIKE "%${search_name}%" OR address LIKE "%${search_name}%" OR floor_area LIKE "%${search_name}%" OR month_rent LIKE "%${search_name}%" OR yearly_rent LIKE "%${search_name}%") `
+  );
+
+  let data = helper.emptyOrRows(rows);
+
+  console.log(data.length);
+  if(data.length == 0 ){
+    data = ""
+  }
+  return {
+    data
+  };
+}
 // to call this in filmrare_routes or stripe page,var auth = await nft_details.isAuth(req,res);
 module.exports = {
   getMultiple,
@@ -301,5 +334,5 @@ module.exports = {
   update,
   getHistory,
   createHistory,
-  remove, isAuth, updateWallet, walletsubupdate,getUserDetailsbyaddress,getMultiplewithaddress
+  remove, isAuth, updateWallet, walletsubupdate,getUserDetailsbyaddress,getMultiplewithaddress,getnftbycheckbox,getnftbysearchbox
 };
