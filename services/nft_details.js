@@ -311,7 +311,7 @@ async function getnftbysearchbox(search_name) {
 
   console.log(search_name.length);
   const rows = await db.query(
-      `SELECT * FROM nft_details where subscription_flag != 1 AND (titile LIKE "%${search_name}%" OR title_description LIKE "%${search_name}%" OR detailed_description LIKE "%${search_name}%") `
+      `SELECT * FROM nft_details where subscription_flag != 1 AND (titile LIKE "%${search_name}%" OR title_description LIKE "%${search_name}%" OR detailed_description LIKE "%${search_name}%" OR address LIKE "%${search_name}%" OR floor_area LIKE "%${search_name}%" OR month_rent LIKE "%${search_name}%" OR yearly_rent LIKE "%${search_name}%") `
   );
 
   let data = helper.emptyOrRows(rows);
