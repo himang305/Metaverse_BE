@@ -324,6 +324,19 @@ async function getnftbysearchbox(search_name) {
     data
   };
 }
+
+async function getDetails(public_url = null) {
+
+  const rows = await db.query(
+    `SELECT * FROM nft_details WHERE public_url LIKE "%${public_url}%"  LIMIT 1`
+  );
+
+  const data = helper.emptyOrRows(rows);
+
+  return {
+    data
+  };
+}
 // to call this in filmrare_routes or stripe page,var auth = await nft_details.isAuth(req,res);
 module.exports = {
   getMultiple,
@@ -334,5 +347,6 @@ module.exports = {
   update,
   getHistory,
   createHistory,
+  getDetails,
   remove, isAuth, updateWallet, walletsubupdate,getUserDetailsbyaddress,getMultiplewithaddress,getnftbycheckbox,getnftbysearchbox
 };

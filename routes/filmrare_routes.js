@@ -179,4 +179,14 @@ router.get("/getnftbysearchbox", async function (req, res, next) {
   }
 });
 
+router.get("/building/:public_url", async function (req, res, next) {
+  try {
+    console.log(req.params.public_url);
+    res.json(await nft_details.getDetails(req.params.public_url));
+  } catch (err) {
+    console.error(`Error while getting details nfts`, err.message);
+    next(err);
+  }
+});
+
 module.exports = router;
