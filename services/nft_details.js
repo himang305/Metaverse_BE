@@ -211,7 +211,7 @@ async function updateUser(id, nft_details) {
 async function getHistory(id = 0) {
 
   const rows = await db.query(
-    `SELECT * FROM asset_history where nft_id = ${id} `
+    `SELECT * FROM asset_history where nft_id = ${id} order by id desc`
   );
 
   const data = helper.emptyOrRows(rows);
@@ -225,9 +225,9 @@ async function createHistory(nft_details) {
   console.log(nft_details.nft_id);
   const result = await db.query(
     `INSERT INTO asset_history 
-    (nft_id, nft_json) 
+    (nft_id, nft_json, remarks) 
     VALUES 
-    ("${nft_details.nft_id}", "${nft_details.nft_json}")`
+    ("${nft_details.nft_id}", "${nft_details.nft_json}", "${nft_details.remarks}")`
   );
 
   let message = "Error in creating history";
