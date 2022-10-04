@@ -1245,8 +1245,8 @@ async function transferOwnership(req) {
             }
           })
           .on('error', console.error);
-      //console.log("test 4");
-      if (message === "Blockchain Success") { //console.log("test 5");
+      console.log("test 4");
+      if (message === "Blockchain Success") { console.log("test 5");
         console.log("Blockchain Success trying to update DB");
         console.log('updating nft_details table' + tokenId);
         message = await nftTransferDB(transaction_id, tokenId, user_id, user, expires);
