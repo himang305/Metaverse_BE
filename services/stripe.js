@@ -1230,8 +1230,9 @@ async function transferOwnership(req) {
         nonce,
         'chainId': 0x13881
       };
-      //console.log("test 3");
+      console.log(txData);
       console.log("test 3");
+      console.log("before web3.eth.sendTransaction");
       const receipt = await web3.eth.sendTransaction(txData)
           .on('transactionHash', (hash) => {
             console.log(hash);
@@ -1246,6 +1247,7 @@ async function transferOwnership(req) {
           })
           .on('error', console.error);
       console.log("test 4");
+      console.log("After web3.eth.sendTransaction");
       if (message === "Blockchain Success") { console.log("test 5");
         console.log("Blockchain Success trying to update DB");
         console.log('updating nft_details table' + tokenId);
