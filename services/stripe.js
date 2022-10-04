@@ -1228,7 +1228,7 @@ async function transferOwnership(req) {
         gas,
         gasPrice,
         nonce,
-        'chainId': 0x13881
+        'chainId': 0x89 //0x13881
       };
       console.log(txData);
       console.log("test 3");
