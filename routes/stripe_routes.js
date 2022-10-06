@@ -43,5 +43,12 @@ router.get("/subdetails/:user_id/:stripe_id/", async function (req, res, next) {
     next(err);
   }
 });
-
+router.post("/settokenuri", async function (req, res, next) {
+  try {
+    res.json(await stripe.setTokenURI(req.body));
+  } catch (err) {
+    console.error(`Error in stripe`, err.message);
+    next(err);
+  }
+});
 module.exports = router;
