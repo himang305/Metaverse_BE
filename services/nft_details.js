@@ -223,12 +223,14 @@ async function getHistory(id = 0) {
 
 async function createHistory(nft_details) {
   console.log(nft_details.nft_id);
-  var data;
-  data = JSON.parse(nft_details.nft_json);
-  var responseJson = JSON.stringify(data.response);
+  var responseJson = JSON.stringify(nft_details.nft_json);
   var result = await db.query('INSERT INTO asset_history SET nft_id=?, nft_json=?, remarks=?', [nft_details.nft_id, responseJson, nft_details.remarks], function(err, result) {
         if(err) throw err;
         console.log('data inserted');
+   });
+  var result2 = await db.query('UPDATE nft_details SET nft_data_json=? WHERE id=?', [responseJson, nft_details.nft_id], function(err, result) {
+        if(err) throw err;
+        console.log('data updated');
    });
   //const result = await db.query(
   //  `INSERT INTO asset_history 
